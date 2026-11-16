@@ -1,0 +1,90 @@
+LED Blinking using 8051 Microcontroller 
+Code :- 
+#include <reg51.h>
+void delay(); void main() { while(1) 
+{ 
+P2 = 0xFF; del/a/ yA()ll; LEDs ON (11111111) P2 = 0x00; delay(); 
+// All LEDs OFF (00000000) 
+} 
+} 
+Void delay() { 
+              int i, j; 
+for(i = 0; i < 500; i++){ 
+for(j= 0; j < 1000; j++) {
+} 
+}
+} 
+
+
+
+
+LED Blinking for alternative bits :- 
+Code:
+#include <reg51.h> 
+void delay(); 
+void main() 
+{ 
+while(1) 
+{
+P2=0x05; 
+delay(); 
+P2=0x0A; 
+delay(); 
+}
+}
+Void delay()
+{
+int i,j;
+for(i= 0; i < 1000; i++); 
+{
+for(i= 0; i < 1000; i++);
+
+}
+	} 
+
+
+
+
+
+BCD Counter Using 8051 Microcontroller:- 
+Code 
+#include <reg51.h> 
+void delay(unsigned int t); 
+void main(void) 
+{ unsigned char count; while(1) { 
+for(count = 0; count <= 9; count++)
+{ P2 = count; delay(1000); 
+} 
+} } 
+void delay(unsigned int t) 
+{ unsigned int i, j; for(i = 0; i < t; i++){ 
+for(j = 0; j < 1275; j++) {
+} 
+}
+}
+
+
+
+
+
+
+Binary counter using 8051 Microcontroller:- 
+Code:-
+#include<reg51.h> voiddelay(unsigned int t); void main(void)
+{ unsignedcharcount;
+while (1)
+{ for(count=0;count <= 16; count++)
+{
+P2 = count; delay(1000);
+}
+}
+}
+voiddelay(unsigned int t) 
+{
+unsigned int i, j;
+for(i=0;i<t;i++)
+{ for(j=0;j<1275; j++)
+{
+}
+}
+}

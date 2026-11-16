@@ -1,0 +1,51 @@
+ 7-Segment display(0 to 9) Using 8051 Microcontroller:- 
+#include <reg51.h> 
+void delay(void) 
+{ 
+int i, j; 
+for(i = 0; i < 500; i++)
+{ for(j = 0; j < 100; j++){ 
+} 
+} 
+} 
+void main(void)
+{ 
+int seg_code[10] = {0xC0, 0xF9, 0xA4, 0xB0, 0x99,0x92, 0x82, 0xF8, 0x80, 
+0x90}; 
+int k; 
+while(1) { for(k = 0; k < 10; k++)
+{ 
+P1 = seg_code[k]; P2 = 0x01;
+delay(); 
+} 
+}
+}
+
+
+
+ 7-Segment Display(00 TO 99) Using 8051 Microcontroller:- 
+Program:-
+#include<reg51.h> 
+#define seg_unit 0x08; #define seg_tens 0x04; void delay() 
+{ 
+int i,j; 
+for(i=0;i<15;i++) 
+{ 
+for(j=0;j<10;j++); 
+} } void main() 
+{ int seg_code[10]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90}; 
+int cnt,temp,i,num; 
+while(1) 
+{ 
+for(cnt=0;cnt<=99;cnt++) 
+{ for(i=0;i<100;i++) { 
+num=cnt; temp=num%10;
+P2=seg_unit; P1=seg_code[temp];
+delay(); 
+num=cnt; temp=num/10;
+P2=seg_tens; P1=seg_code[temp];
+delay(); 
+} 
+} 
+} 
+} 

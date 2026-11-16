@@ -1,0 +1,99 @@
+SQUARE WAVE - 
+#include<reg51.h> 
+//Function prototype for delay voiddelay(); 
+voidmain() 
+{
+while(1) {	// Infinite loop 
+P0 = 0xFF; delay(); 
+P0 = 0x00; 
+delay(); 
+}	// Set Port 0 HIGH 
+// Generate HIGH time 
+// Set Port 0 LOW 
+// Generate LOW time 
+}
+//Timer 0 delay function
+voiddelay() 
+{
+	TMOD = 0x01; 	// Timer 0, Mode 1 (16-bit timer) 
+// Load lower byte of Timer 0 TL0 = 0x01;
+// Load higher byte of Timer 0 
+TH0 = 0xFF; 
+// Start Timer 0 
+TR0 = 1; while(TF0 == 0);
+// Wait until timer overflows 
+TR0 = 0; 
+TF0 = 0; 
+
+
+
+
+TRIANGULARWAVE -
+#include <reg51.h>	 
+// Function prototype for delay void delay();
+void main()
+{
+	while(1)	//Infinite loop
+{
+int i, j;
+// Increase value from 0 to 255
+for(i= 0;i<= 255;i++)
+{
+P1=i; //SendincreasingvaluetoPort 1 delay(); //Smalldelay
+}
+// Decrease value from 255 to 0
+for(j = 255; j >= 0; j--)
+{
+P1=j; //SenddecreasingvaluetoPort 1 delay(); //Smalldelay
+}
+}
+}
+//Timer0delay function
+void delay()
+{
+TMOD=0x01;
+TL0=0x1A; TH0=0xFF;
+TR0= 1; while(TF0==0);
+TR0= 0; 
+TF0= 0; 
+} 	//Timer0,Mode1(16-bit timer) 
+//LoadlowerbyteofTimer 0
+//LoadhigherbyteofTimer 0 
+//StartTimer0
+//Waitfortimeroverflow 
+//StopTimer0
+//Clearoverflow flag
+
+
+
+
+
+SAWTOOTH WAVE- 
+#include <reg51.h>
+//Functionprototypefordelay void delay();
+void main()
+{ while(1)	//Infinite loop 
+{
+int i, j;
+//Graduallyincreasevalue from 0 to 255 for(i=0;i<=255;i++) {
+P1=i;
+delay(); }	//Send increasing value to Port 1 //Small delay 
+P1=0;
+delay();	//Immediately reset output to 0 
+//Small delay 
+}
+}
+//Timer0delay function
+void delay()
+{
+TMOD =0x01;
+TL0 = 0x1A; TH0 = 0xFF;
+TR0 = 1; while(TF0== 0);
+TR0 = 0;
+TF0 = 0;	//Timer 0, Mode 1 (16-bit timer) 
+//Load lower byte of Timer 0
+//Load higher byte of Timer 0 
+//Start Timer 0 
+//Wait for timer overflow 
+//Stop Timer 0 
+//Clear overflow flag }

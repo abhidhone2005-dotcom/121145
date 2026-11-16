@@ -1,0 +1,73 @@
+Experiment : RTC Program Code 
+1)	Code:-
+●	Main Code;-
+/***************************************************************
+ Program : Demonstration of On-chip RTC Functionality
+ Board   : SBC_ARM7
+ Processor: LPC2148
+****************************************************************/
+#include "lpc214x.h"
+#include <stdio.h>
+#include "lcd.h"
+#define RTConPrescaler 1
+extern void UartInit(unsigned int baudrate);
+void delay(unsigned int time)
+{
+    unsigned int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 5000; j++);
+}
+void RTCInit(void)
+{
+    CIIR = 0x00;
+
+#ifdef RTConPrescaler
+    PREINT  = 0x16D;
+    PREFRAC = 0x1B00;
+    CCR = 0x02;
+#else
+    CCR = 0x02;
+#endif
+}
+void SetTime(int hours, int mins, int sec)
+{
+    SEC  = sec;
+    MIN  = mins;
+    HOUR = hours;
+    CCR = 0x01;
+}
+int main(void)
+{
+    UartInit(9600);
+    InitLCD();
+    RTCInit();
+    SetTime(5, 30, 1);
+
+    while (1)
+    {
+        printf("\nThe Time is ");
+        printf("%02d:%02d:%02d", HOUR, MIN, SEC);
+        ClearDisplay();
+        SetLineNumber(1);
+        SendData('T');
+        SendData('i');
+        SendData('m');
+        SendData('e');
+        SendData(':');
+        SendData(' ');
+        /* Display time on LCD */
+        {
+            char timeStr[9];
+            sprintf(timeStr, "%02d:%02d:%02d",
+                    HOUR, MIN, SEC);
+            SetLineNumber(2);
+            {
+                int i;
+                for (i = 0; timeStr[i] != '\0'; i++)
+                    SendData(timeStr[i]);
+            }
+        }
+        delay(500);
+    }
+    return 0;
+}
