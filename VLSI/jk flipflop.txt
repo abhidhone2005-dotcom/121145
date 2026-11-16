@@ -1,0 +1,55 @@
+Verilog Code for JK flip-flop: 
+module jk_flip_flop ( 
+ input wire clk, // Clock signal 
+ input wire rst_n, // Asynchronous active-low reset 
+ input wire j, // Set control input 
+ input wire k, // Reset control input 
+ output reg q, // Flip-Flop output 
+ output wire q_bar // Inverted output 
+);
+ always @(posedge clk or posedge rst_n) begin 
+ if (rst_n) begin 
+ q <= 1'b0;
+ end else begin 
+ case ({j, k}) 
+ 2'b00: q <= q; // Hold
+ 2'b01: q <= 1'b0; // Reset
+ 2'b10: q <= 1'b1; // Set
+ 2'b11: q <= ~q; // Toggle
+ endcase 
+ end 
+ end 
+ assign q_bar = ~q;
+endmodule
+
+
+
+
+Testbench Code (for JK flip-flop) 
+`timescale 1ns / 1ps 
+module tb_flip_flops;
+reg clk;
+reg rst_n;
+// JK FF signals 
+reg j, k;
+wire q_jk, q_bar_jk;
+// Instantiate UUTs 
+jk_flip_flop uut_jk ( 
+ .clk(clk), .rst_n(rst_n), .j(j), .k(k), 
+ .q(q_jk), .q_bar(q_bar_jk) 
+);
+// Generate 10ns Clock 
+always #5 clk = ~clk;
+initial begin 
+ // Initialize 
+ clk = 0; rst_n = 0; t = 0; j = 0; k = 0;
+ // Release Reset 
+ #12 rst_n = 1;
+ // Test JK Flip-Flop 
+ #10 j = 1; k = 0; // Set
+ #10 j = 0; k = 1; // Reset
+ #10 j = 1; k = 1; // Toggle
+ #20 j = 0; k = 0; // Hold
+ #20 $finish;
+end 
+endmodule

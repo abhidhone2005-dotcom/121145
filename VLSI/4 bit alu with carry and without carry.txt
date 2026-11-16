@@ -1,0 +1,72 @@
+Verilog Code Print of ALU with carry and without carry 
+ 
+module Four_Bit_Adder ( 
+    input  [3:0] A,     
+    input  [3:0] B,     
+    input      CIN,
+    input       EN, 
+ 
+    output [3:0] SUM,
+    output       CARRY 
+); 
+ 
+    wire [4:0] RESULT; 
+ 
+    assign RESULT = A + B + (CIN & EN); 
+ 
+    assign SUM   = RESULT[3:0];
+    assign CARRY = RESULT[4]; 
+ 
+endmodule
+
+
+
+
+Verilog Test Bench code print of ALU with carry and without carry 
+ 
+`timescale 1ns/1ps 
+ 
+module Four_Bit_Adder_tb; 
+ 
+    reg [3:0] A;
+    reg [3:0] B; 
+    reg       CIN; 
+    reg       EN; 
+ 
+    wire [3:0] SUM; 
+    wire       CARRY; 
+ 
+    Four_Bit_Adder DUT (.A(A),.B(B),.EN(EN),.SUM(SUM),.CARRY(CARRY)); 
+ 
+    initial begin 
+ 
+        $monitor("Time=%0t A=%b B=%b CIN=%b EN=%b SUM=%b CARRY=%b", 
+                 $time, A, B, CIN, EN, SUM, CARRY); 
+ 
+        // Test 1: Without carry 
+        A = 4'b0101;         B = 4'b0011; 
+        CIN = 1'b0; 
+        EN = 1'b0; 
+        #10;  
+        // Test 2: With carry 
+        A = 4'b0101;         B = 4'b0011;      
+        CIN = 1'b1; 
+        EN = 1'b1; 
+        #10;  
+        // Test 3: Without carry 
+A= 4'b0111; 
+B= 4'b0010; 
+        CIN = 1'b0; 
+        EN = 1'b0; 
+        #10;  
+        // Test 4: With carry 
+A= 4'b0111; 
+B= 4'b0010; 
+        CIN = 1'b1; 
+        EN = 1'b1; 
+        #10;  
+        $finish; 
+ 
+    end 
+ 
+endmodule

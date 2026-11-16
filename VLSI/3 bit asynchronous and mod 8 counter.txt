@@ -1,0 +1,167 @@
+Verilog Code for 3-bit Asynchronous counter
+Verilog Code Print
+module up_down_counter (
+input wire clk, // 100 MHz clock
+input wire rst, // Active-high reset
+input wire up_down, // 1 = Up, 0 = Down
+output reg [3:0] count, // 4-bit counter (0-15)
+output reg clk_1hz // 1 Hz clock
+);
+reg [25:0] div_count;
+// Frequency divider: 100 MHz to 1 Hz
+always @(posedge clk or posedge rst) begin
+if (rst) begin
+div_count <= 26'd0;
+clk_1hz <= 1'b0;
+end
+else begin
+if (div_count == 26'd49_999_999) begin
+div_count <= 26'd0;
+clk_1hz <= ~clk_1hz;
+end
+else begin
+div_count <= div_count + 1'b1;
+end
+end
+end
+// Up/Down counter
+always @(posedge clk_1hz or posedge rst) begin
+if (rst) begin
+count <= 4'd0;
+end
+else begin
+if (up_down)
+count <= count + 1'b1;
+else count <= count - 1'b1;
+end
+end
+endmodule
+
+
+
+
+
+
+Verilog Test Bench code print
+`timescale 1ns / 1ps
+module updowncounter_tb;
+reg clk;
+reg rst;
+reg up_down;
+wire [3:0] count;
+wire clk_1hz;
+// Instantiate the DUT
+up_down_counter uut (
+.clk(clk),
+.rst(rst),
+.up_down(up_down),
+.count(count),
+.clk_1hz(clk_1hz)
+);
+// Generate 100 MHz clock
+// Period = 10 ns
+always #5 clk = ~clk;
+initial begin
+// Initialize signals
+clk = 1'b0;
+rst = 1'b1;
+up_down = 1'b1;
+// Monitor outputs
+$monitor("Time=%0t ns | Reset=%b | Mode=%b | clk_1hz=%b | Count=%d",
+$time, rst, up_down, clk_1hz, count);
+// Apply reset
+#20;
+rst = 1'b0; // Test UP counting
+up_down = 1'b1;
+$display("UP counting started");
+// Wait for 5 positive edges of 1 Hz clock
+repeat (5) @(posedge clk_1hz);
+// Test DOWN counting
+up_down = 1'b0;
+$display("DOWN counting started");
+repeat (5) @(posedge clk_1hz);
+// Finish simulation
+$finish;
+end
+endmodule
+
+
+
+
+
+Verilog HDL code and suitable test benches to simulate a Mod-8 counter and a 4-bit binary 
+counter. Compare their simulation waveforms and explain the differences in their counting 
+sequences and number of states.
+Verilog Code Print
+`timescale 1ns / 1ps
+module mod8_counter (
+ input wire clk, // 1 MHz input clock
+ input wire rst, // Active-high reset
+ output reg [2:0] count, // MOD-8 counter output
+ output reg clk_1hz // 1 Hz divided clock
+);
+ reg [18:0] div_count;
+ // Frequency divider: 1 MHz to 1 Hz
+ always @(posedge clk or posedge rst) begin
+ if (rst) begin
+ div_count <= 19'd0;
+ clk_1hz <= 1'b0;
+ end
+ else begin
+ if (div_count == 19'd4) begin
+ div_count <= 19'd0;
+ clk_1hz <= ~clk_1hz;
+ end
+ else begin
+ div_count <= div_count + 1'b1;
+ end
+ end
+ end
+ // MOD-8 counter operating at 1 Hz
+ always @(posedge clk_1hz or posedge rst) begin
+ if (rst)
+ count <= 3'b000;
+ else if (count == 3'b111)
+ count <= 3'b000;
+ else
+ count <= count + 1'b1;
+ end
+endmodule 
+
+
+
+
+Verilog Test Bench code print
+`timescale 1ns / 1ps
+module mod8_counter_tb;
+ reg clk;
+ reg rst;
+ wire [2:0] count;
+ wire clk_1hz;
+ // Instantiate the DUT
+ mod8_counter DUT (
+ .clk(clk),
+ .rst(rst),
+ .count(count),
+ .clk_1hz(clk_1hz)
+ );
+ // Generate 1 MHz clock (period = 1000 ns)
+ always #500 clk = ~clk;
+ initial begin
+ // Initialize inputs
+ clk = 0;
+ rst = 1;
+ // Monitor signals
+ $monitor(
+ "Time=%0t ns | rst=%b | clk=%b | clk_1hz=%b | count=%d",
+ $time, rst, clk, clk_1hz, count );
+ // Apply reset
+ #2000;
+ rst = 0;
+ // Wait for 10 rising edges of the divided clock
+ repeat (10) @(posedge clk_1hz);
+ // Finish simulation
+ #10;
+ $finish;
+ end
+endmodule

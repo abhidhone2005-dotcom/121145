@@ -1,0 +1,59 @@
+Verilog Code for T flip-flop: 
+module t_flip_flop ( 
+ input wire clk, // Clock signal 
+ input wire rst_n, // Asynchronous active-low reset 
+ input wire t, // Toggle input 
+ output reg q, // Flip-flop output 
+ output wire q_bar // Inverted output 
+);
+ always @(posedge clk or negedge rst_n) begin 
+ if (!rst_n) begin 
+ q <= 1'b0;
+ end else begin 
+ if (t) 
+ q <= ~q; // Toggle when T = 1
+ else 
+ q <= q; // Hold state when T = 0
+ end 
+ end 
+ assign q_bar = ~q;
+endmodule
+
+
+
+
+
+Testbench Code (for T flip-flop) 
+`timescale 1ns/1ps 
+module tb_flip_flops;
+ // Testbench signals 
+ reg clk; 
+ reg rst_n;
+ 
+ // T FF signals 
+ reg t; 
+ wire q_t; 
+ wire q_bar_t;
+ // Instantiate UUT (Unit Under Test) 
+ t_flip_flop uut_t ( 
+ .clk(clk), 
+ .rst_n(rst_n), 
+ .t(t), 
+ .q(q_t), 
+ .q_bar(q_bar_t) 
+ );
+ // Generate 10ns Clock 
+ always #5 clk = ~clk;
+ initial begin 
+ // Initialize 
+ clk = 0; 
+ rst_n = 0;
+ t = 0;
+ // Release Reset 
+ #12 rst_n = 1;
+ // Test T Flip-Flop 
+ #10 t = 1; // Start toggling 
+ #20 t = 0; // Hold state
+ #30 $finish;
+ end 
+endmodule

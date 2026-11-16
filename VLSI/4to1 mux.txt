@@ -1,0 +1,162 @@
+4:1 Multiplexer – Behavioral Modeling Code:
+`timescale 1ns/1ps
+module mux4_1 (w0, w1, w2, w3, S, f);
+//4:1 Multiplexer - Behavioral Modeling
+input w0, w1, w2, w3;
+input [1:0] S;
+output reg f;
+always @(*)
+if (S == 2'b00)
+f = w0;
+else if (S == 2'b01)
+f = w1;
+else if (S == 2'b10)
+f = w2;
+else
+f = w3;
+endmodule
+
+
+
+4:1 Multiplexer – Dataflow Modeling
+module mux4_1 (w0, w1, w2, w3, S, f);
+input w0, w1, w2, w3;
+input [1:0] S;
+output f;
+assign f = S[1] ? (S[0] ? w3 : w2) : (S[0] ? w1 : w0);
+endmodule
+
+
+
+4:1 Multiplexer Using Hierarchy
+module mux2_1 (y, i0, i1, sel);
+output y;
+input i0, i1, sel;
+assign y = sel ? i1 : i0;
+endmodule
+module mux4_1 (f, w0, w1, w2, w3, s1, s0);
+output f;
+input w0, w1, w2, w3;
+input s1, s0;
+wire y1, y2;
+// Instantiate 2:1 MUX modules
+mux2to1 M1 (y1, w0, w1, s0);
+mux2to1 M2 (y2, w2, w3, s0);
+mux2to1 M3 (f, y1, y2, s1);
+endmodule
+
+
+
+
+Testbench Code (for 4:1 MUX)
+`timescale 1ns/1ps
+module mux4_1_tb;
+reg w0, w1, w2, w3;
+reg [1:0] S;
+wire f;
+// Instantiate the DUT
+mux4_1 uut (w0, w1, w2, w3, S, f);
+initial begin
+ w0 = 0;
+ w1 = 1;
+ w2 = 0;
+ w3 = 1;
+ S = 2'b00; #10; // expect f = w0 = 0
+ S = 2'b01; #10; // expect f = w1 = 1
+ S = 2'b10; #10; // expect f = w2 = 0
+ S = 2'b11; #10; // expect f = w3 = 1
+ $finish;
+end
+initial begin
+ $monitor("time=%0t | S=%b | w0=%b w1=%b w2=%b w3=%b | f=%b",
+ $time, S, w0, w1, w2, w3, f);
+end
+endmodule 
+
+
+
+
+UCF File (for 4:1 MUX)
+set_property IOSTANDARD LVCMOS33 [get_ports {S[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {S[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports f]
+set_property IOSTANDARD LVCMOS33 [get_ports W0]
+set_property IOSTANDARD LVCMOS33 [get_ports W1]
+set_property IOSTANDARD LVCMOS33 [get_ports W2]
+set_property IOSTANDARD LVCMOS33 [get_ports W3]
+set_property PACKAGE_PIN R2 [get_ports {S[1]}]
+set_property PACKAGE_PIN T1 [get_ports {S[0]}]
+set_property PACKAGE_PIN P1 [get_ports f]
+set_property PACKAGE_PIN U1 [get_ports W0]
+set_property PACKAGE_PIN R3 [get_ports W1]
+set_property PACKAGE_PIN T2 [get_ports W2]
+set_property PACKAGE_PIN T3 [get_ports W3] 
+
+
+
+
+
+8:1 Multiplexer – Hierarchical Modeling Code:
+// 2:1 Multiplexer
+module mux2to1(y, i0, i1, sel);
+input i0, i1, sel;
+output y;
+assign y = sel ? i1 : i0;
+endmodule
+// 4:1 Multiplexer using 2:1 MUX
+module mux4to1(f, w0, w1, w2, w3, s1, s0);
+input w0, w1, w2, w3;
+input s1, s0;
+output f;
+wire y1, y2;
+mux2to1 M1(y1, w0, w1, s0);
+mux2to1 M2(y2, w2, w3, s0);
+mux2to1 M3(f, y1, y2, s1);
+endmodule
+// 8:1 Multiplexer using 4:1 MUX and 2:1 MUX
+module mux8_1(
+ output f,
+ input w0, w1, w2, w3,
+ input w4, w5, w6, w7,
+ input s2, s1, s0
+);
+wire y1, y2;
+mux4to1 M4(y1, w0, w1, w2, w3, s1, s0);
+mux4to1 M5(y2, w4, w5, w6, w7, s1, s0);
+mux2to1 M6(f, y1, y2, s2);
+endmodule 
+
+
+
+
+Testbench Code (for 8:1 MUX)
+`timescale 1ns/1ps
+module mux8_1_tb;
+reg w0,w1,w2,w3,w4,w5,w6,w7;
+reg s2,s1,s0;
+wire f;
+mux8_1 uut(
+ f,
+ w0,w1,w2,w3,
+ w4,w5,w6,w7,
+ s2,s1,s0
+);
+initial begin
+ w0=0; w1=1; w2=0; w3=1;
+ w4=0; w5=1; w6=0; w7=1;
+ {s2,s1,s0}=3'b000; #10;
+ {s2,s1,s0}=3'b001; #10;
+ {s2,s1,s0}=3'b010; #10;
+ {s2,s1,s0}=3'b011; #10;
+ {s2,s1,s0}=3'b100; #10;
+ {s2,s1,s0}=3'b101; #10;
+ {s2,s1,s0}=3'b110; #10;
+ {s2,s1,s0}=3'b111; #10;
+ $finish;
+end
+initial begin
+ $monitor("Time=%0t Select=%b%b%b Output=%b",
+ $time,s2,s1,s0,f);
+end
+endmodule 
+
